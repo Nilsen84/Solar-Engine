@@ -2,9 +2,10 @@ package com.solartweaks.engine.tweaks
 
 import com.solartweaks.engine.*
 import com.solartweaks.engine.util.*
-import org.objectweb.asm.Label
+import org.objectweb.asm.*
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.Type
+import org.objectweb.asm.tree.FieldInsnNode
+import org.objectweb.asm.tree.LdcInsnNode
 import java.net.URI
 
 fun initTweaks() {
@@ -190,6 +191,36 @@ fun initTweaks() {
                         replaceCall(matcher = { it.name == "nextInt" }) {
                             pop()
                             loadConstant(-26)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    withModule<RemoveStoreButton> {
+        findLunarClass {
+            methods {
+                "init" {
+                    method.isConstructor()
+                    strings has listOf("singleplayer", "multiplayer", "store")
+
+                    transform {
+                        val storeLdc = method.instructions.first { it is LdcInsnNode && it.cst == "store" }
+                        val storeButton = storeLdc.next<FieldInsnNode> { it.opcode == PUTFIELD }!!
+                        val componentList = method.instructions.filterIsInstance<FieldInsnNode>()
+                            .find { it.opcode == GETFIELD && it.desc == "Ljava/util/List;" }
+                            ?: error("Component list not found")
+
+                        methodExit {
+                            loadThis()
+                            getField(componentList)
+
+                            loadThis()
+                            getField(storeButton)
+
+                            visitMethodInsn(INVOKEINTERFACE, "java/util/List", "remove", "(Ljava/lang/Object;)Z", true)
+                            pop(1)
                         }
                     }
                 }

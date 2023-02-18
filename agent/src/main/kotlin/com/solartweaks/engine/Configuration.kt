@@ -49,6 +49,7 @@ data class Configuration(
 @Serializable
 data class Modules(
     val metadata: Metadata = Metadata(),
+    val removeStoreButton: RemoveStoreButton = RemoveStoreButton(),
     val discordRichPresence: DiscordRichPresence = DiscordRichPresence(),
     val privacy: Privacy = Privacy(),
     val removeFakeLevelHead: RemoveFakeLevelHead = RemoveFakeLevelHead(),
@@ -122,6 +123,13 @@ data class Metadata(
 
     override val isEnabled: Boolean = true
 ) : Module
+
+@Serializable
+@ModuleInfo(
+    "Remove Store Button",
+    "Removes Lunars store button from the main menu"
+)
+data class RemoveStoreButton(override val isEnabled: Boolean = false) : Module
 
 @Serializable
 @ModuleInfo(

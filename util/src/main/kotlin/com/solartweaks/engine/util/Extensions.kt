@@ -336,3 +336,14 @@ fun ClassNode.debug(): String {
     accept(TraceClassVisitor(null, PrintWriter(bout)))
     return bout.toByteArray().decodeToString()
 }
+
+inline fun <reified T : AbstractInsnNode> AbstractInsnNode.next(p: (T) -> Boolean): T? {
+    var insn = next
+
+    while (insn != null) {
+        if (insn is T && p(insn)) return insn
+        insn = insn.next
+    }
+
+    return null
+}
