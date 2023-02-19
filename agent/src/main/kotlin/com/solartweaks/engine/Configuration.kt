@@ -127,7 +127,7 @@ data class Metadata(
 @Serializable
 @ModuleInfo(
     "Remove Store Button",
-    "Removes Lunars store button from the main menu"
+    "Removes Lunar's store button from the main menu"
 )
 data class RemoveStoreButton(override val isEnabled: Boolean = false) : Module
 

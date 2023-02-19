@@ -208,7 +208,7 @@ fun initTweaks() {
                     transform {
                         val storeLdc = method.instructions.first { it is LdcInsnNode && it.cst == "store" }
                         val storeButton = storeLdc.next<FieldInsnNode> { it.opcode == PUTFIELD }!!
-                        val componentList = method.instructions.filterIsInstance<FieldInsnNode>()
+                        val componentList = method.references
                             .find { it.opcode == GETFIELD && it.desc == "Ljava/util/List;" }
                             ?: error("Component list not found")
 
@@ -220,7 +220,7 @@ fun initTweaks() {
                             getField(storeButton)
 
                             visitMethodInsn(INVOKEINTERFACE, "java/util/List", "remove", "(Ljava/lang/Object;)Z", true)
-                            pop(1)
+                            pop()
                         }
                     }
                 }
